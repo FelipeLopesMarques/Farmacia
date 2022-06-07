@@ -24,13 +24,13 @@ public class Produtos {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank(message = "Este Campo é obrigatório e não pode conter apenas espaço em branco!")
+	@NotBlank(message = "Este Campo é obrigatório!")
 	@Size(min = 2, max = 50, message = "O atributo deve conter no mínimo 5 e no máximo 50 caracteres!") 
 	private String nome;
 	
 	private String foto;
 	
-	@NotBlank(message = "Este Campo é obrigatório e não pode conter apenas espaço em branco!")
+	@NotBlank(message = "Este Campo é obrigatório!")
 	@Size(min = 5, max = 550, message = "O atributo deve conter no mínimo 5 e no máximo 550 caracteres!") 
 	private String descricao;
 	
@@ -39,12 +39,8 @@ public class Produtos {
 	@Positive(message = "Este é obrigatório e deve conter valor maior que zero!") 
 	private BigDecimal preco;
 	
-	@NotNull(message = "Este Campo é obrigatório!")
-	@Positive(message = "Este é obrigatório e deve conter valor positivo!")
 	private int quantidade;
 	
-	@NotBlank(message = "Este Campo é obrigatório e não pode conter apenas espaço em branco!")
-	@Size(min = 5, max = 50, message = "O atributo deve conter no mínimo 5 e no máximo 550 caracteres!") 
 	private String observacao;
 	
 	@ManyToOne
@@ -103,8 +99,8 @@ public class Produtos {
 		return observacao;
 	}
 
-	public void setObservação(String observação) {
-		this.observacao = observação;
+	public void setObservação(String observacao) {
+		this.observacao = observacao;
 	}
 
 	public Categoria getCategoria() {

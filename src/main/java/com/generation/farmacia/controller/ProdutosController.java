@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.generation.farmacia.model.Produtos;
+import com.generation.farmacia.repository.CategoriaRepository;
 import com.generation.farmacia.repository.ProdutosRepository;
 
 @RestController
@@ -29,9 +30,9 @@ public class ProdutosController {
 	private ProdutosRepository produtosRepository;
 	
 	@Autowired
-	private ProdutosRepository categoriaRepository;
+	private CategoriaRepository categoriaRepository;
 	
-	@GetMapping("/produtos/{produtos}")
+	@GetMapping
 	public ResponseEntity<List<Produtos>>getAll(){
 		return ResponseEntity.ok(produtosRepository.findAll());
 	}
@@ -45,32 +46,38 @@ public class ProdutosController {
 	
 	@GetMapping("/nome/{nome}")
 	public ResponseEntity<List<Produtos>>getBynome(@PathVariable String nome){
-		return ResponseEntity.ok(produtosRepository.findAllByNomeContainingIgnoreCase(nome));
+		return ResponseEntity.ok(produtosRepository.findAllByNomeContainingIgnoreCaseOrderByNome(nome));
 	}
 	
 	@PostMapping
 	public ResponseEntity<Produtos> postProdutos(@Valid @RequestBody Produtos produtos){
+		if (categoriaRepository.existsById(produtos.getCategoria().getId()))
 		return ResponseEntity.status(HttpStatus.CREATED).body(produtosRepository.save(produtos));
+		
+		return ResponseEntity.badRequest().build();
 	}
 	
 	@PutMapping
-	public ResponseEntity<Produtos> putProdutos(@Valid @RequestBody Produtos produtos){
-		if(produtosRepository.existsById(produtos.getId())){
-			if(categoriaRepository.existsById(produtos.getCategoria().getId()))
-					return ResponseEntity.status(HttpStatus.OK).body(produtosRepository.save(produtos));
-				
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	public ResponseEntity<Produtos> putProduto(@Valid @RequestBody Produtos produtos) {
+					
+		if (produtosRepository.existsById(produtos.getId())) {
+		
+			if (categoriaRepository.existsById(produtos.getCategoria().getId())) 
+				return ResponseEntity.ok(produtosRepository.save(produtos));
+			else
+				return ResponseEntity.badRequest().build();
+					
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		
+		return ResponseEntity.notFound().build();
 	}
 	
-	@DeleteMapping ("/{id}")
-	public ResponseEntity<?> deleteProdutos (@PathVariable Long id) {
-		return produtosRepository.findById(id)
-			.map(response -> {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteProdutos(@PathVariable Long id) {
+		return produtosRepository.findById(id).map(resposta -> {
+			produtosRepository.deleteById(id);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-			})
-					.orElse(ResponseEntity.notFound().build());
+		}).orElse(ResponseEntity.notFound().build());
 	}
 	
 	
